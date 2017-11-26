@@ -27,7 +27,7 @@ div
       dx=30
       dy=30
       font-family="mono"
-      font-size=50
+      v-bind:font-size="fontSize"
       ) {{data.yAxis.label}}
     g(v-for="tick in ticksY")
       circle(
@@ -42,7 +42,7 @@ div
         v-bind:dx="tick < 0 ? 20 : -20"
         dy=11
         font-family="mono"
-        font-size=50
+        v-bind:font-size="fontSize"
       ) {{tick === 0 ? "" : tick}}
     //- x-axis
     line.axis(
@@ -59,7 +59,7 @@ div
       dy=50
       text-anchor="end"
       font-family="mono"
-      font-size=50
+      v-bind:font-size="fontSize"
       ) {{data.xAxis.label}}
     g(v-for="tick in ticksX")
       circle(
@@ -73,7 +73,7 @@ div
         text-anchor="middle"
         v-bind:dy="tick > 0 ? -20 : 60"
         font-family="mono"
-        font-size=50
+        v-bind:font-size="fontSize"
       ) {{tick === 0 ? "" : tick}}
     path.plot(
       v-bind:d="functionPath"
@@ -88,28 +88,37 @@ import { Random } from "meteor/random"
 import math from "mathjs"
 return
   data : ->
-    arrowLength : .7
+    arrowLength : 1
     scale : 100
     margin : 30
+    fontSize : 40
   computed :
     functionPath : ->
       fktStr = @data.data?[0]?.fn
-      xMin = @data.xAxis.domain[0]
-      xMax = @data.xAxis.domain[1]
-      result = "M#{xMin*@scale},#{-math.eval(fktStr, {x:xMin})*@scale}"
-      for x in [xMin..xMax] by .01
+      result = "M#{(@xMin-1)*@scale},#{-math.eval(fktStr, {x:(@xMin-1)})*@scale}"
+      for x in [(@xMin-1)..(@xMax+1)] by .01
         result += "L#{x*@scale},#{-math.eval(fktStr, {x})*@scale}"
       result
     functionPathTransform : -> "translate(#{@origin.x},#{@origin.y})"
     arrowYTransform : -> "translate(#{@origin.x} -5)"
     arrowXTransform : -> "translate(#{@width+5} #{@origin.y}) rotate(90)"
     viewBox : -> "#{-@margin} #{-@margin} #{@width+2*@margin} #{@height+2*@margin}"
-    width : -> @scale * (@range(@data.xAxis.domain) + @arrowLength)
-    height : -> @scale * (@range(@data.yAxis.domain) + @arrowLength)
-    xMin : -> math.floor @data.xAxis.domain[0]
-    xMax : -> math.ceil @data.xAxis.domain[1]
-    yMin : -> math.floor @data.yAxis.domain[0]
-    yMax : -> math.ceil @data.yAxis.domain[1]
+    width : -> @scale * (@xMax - @xMin + @arrowLength)
+    width : -> @scale * (@xMax - @xMin + @arrowLength)
+    height : -> @scale * (@yMax - @yMin + @arrowLength)
+    #make sure the axis are in the displayed area
+    xMin : ->
+      if @data.xAxis.domain[0] > 0 and @data.xAxis.domain[1] > 0 then -1
+      else math.floor @data.xAxis.domain[0]
+    xMax : ->
+      if @data.xAxis.domain[0] < 0 and @data.xAxis.domain[1] < 0 then 1
+      else math.ceil @data.xAxis.domain[1]
+    yMin : ->
+      if @data.yAxis.domain[0] > 0 and @data.yAxis.domain[1] > 0 then -1
+      else math.floor @data.yAxis.domain[0]
+    yMax : ->
+      if @data.yAxis.domain[0] < 0 and @data.yAxis.domain[1] < 0 then 1
+      else math.ceil @data.yAxis.domain[1]
     ticksX : -> [@xMin..@xMax]
     ticksY : -> [@yMin..@yMax]
     origin : ->
