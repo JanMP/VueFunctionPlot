@@ -108,16 +108,16 @@ return
     height : -> @scale * (@yMax - @yMin + @arrowLength)
     #make sure the axis are in the displayed area
     xMin : ->
-      if @data.xAxis.domain[0] > 0 and @data.xAxis.domain[1] > 0 then -1
+      if @data.xAxis.domain[0] >= 0 and @data.xAxis.domain[1] >= 0 then -1
       else math.floor @data.xAxis.domain[0]
     xMax : ->
-      if @data.xAxis.domain[0] < 0 and @data.xAxis.domain[1] < 0 then 1
+      if @data.xAxis.domain[0] <= 0 and @data.xAxis.domain[1] <= 0 then 1
       else math.ceil @data.xAxis.domain[1]
     yMin : ->
-      if @data.yAxis.domain[0] > 0 and @data.yAxis.domain[1] > 0 then -1
+      if @data.yAxis.domain[0] >= 0 and @data.yAxis.domain[1] >= 0 then -1
       else math.floor @data.yAxis.domain[0]
     yMax : ->
-      if @data.yAxis.domain[0] < 0 and @data.yAxis.domain[1] < 0 then 1
+      if @data.yAxis.domain[0] <= 0 and @data.yAxis.domain[1] <= 0 then 1
       else math.ceil @data.yAxis.domain[1]
     ticksX : -> [@xMin..@xMax]
     ticksY : -> [@yMin..@yMax]
