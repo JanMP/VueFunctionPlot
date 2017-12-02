@@ -94,10 +94,11 @@ return
     fontSize : 40
   computed :
     functionPath : ->
+      math.config number : "number"
       fktStr = @data.data?[0]?.fn
-      result = "M#{(@xMin-1)*@scale},#{-math.eval(fktStr, {x:(@xMin-1)})*@scale}"
+      result = "M#{(@xMin-1)*@scale},#{-math.eval(fktStr, {x : (@xMin-1)})*@scale}"
       for x in [(@xMin-1)..(@xMax+1)] by .01
-        result += "L#{x*@scale},#{-math.eval(fktStr, {x : math.bignumber x})*@scale}"
+        result += "L#{x*@scale},#{-math.eval(fktStr, {x})*@scale}"
       result
     functionPathTransform : -> "translate(#{@origin.x},#{@origin.y})"
     arrowYTransform : -> "translate(#{@origin.x} -5)"
